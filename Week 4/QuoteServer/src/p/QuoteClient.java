@@ -1,3 +1,4 @@
+package p;
 /*
  * Copyright (c) 1995, 2008, Oracle and/or its affiliates. All rights reserved.
  *
@@ -27,11 +28,44 @@
  * LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */ 
-import java.io.*;
+ */
 
-public class QuoteServer {
+import java.io.*;
+import java.net.*;
+import java.util.Scanner;
+
+public class QuoteClient {
     public static void main(String[] args) throws IOException {
-        new QuoteServerThread().start();
+
+        if (args.length != 1) {
+             System.out.println("Usage: java QuoteClient <hostname>");
+             return;
+        }
+
+            // get a datagram socket
+        DatagramSocket socket = new DatagramSocket();
+
+            // Ask user for input 
+        byte[] buffer = new byte[512];
+        Scanner reader = new Scanner(System.in);
+        System.out.println("Enter Calculation (FORMAT: FUNC;NUM1;NUM2)");
+        String message = reader.nextLine();
+        buffer = message.getBytes();
+        
+            // send request
+        InetAddress address = InetAddress.getByName(args[0]);
+        DatagramPacket packet = new DatagramPacket(buffer, buffer.length, address, 3422);
+        socket.send(packet);
+
+            // get response
+        byte[] received = new byte[512];
+        packet = new DatagramPacket(received, received.length);
+        socket.receive(packet);
+
+	    // display response
+        String received_data = new String(packet.getData(), 0, packet.getLength());
+        System.out.println(received_data);
+
+        socket.close();
     }
 }

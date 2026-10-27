@@ -27,37 +27,15 @@
  * LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */
-
+ */ 
+package p;
 import java.io.*;
-import java.net.*;
-import java.util.*;
 
-public class QuoteClient {
+public class QuoteServer {
     public static void main(String[] args) throws IOException {
+        System.out.println("Starting Server");
+        new QuoteServerThread().start();
+        System .out.println("Server Active");
 
-        if (args.length != 1) {
-             System.out.println("Usage: java QuoteClient <hostname>");
-             return;
-        }
-
-            // get a datagram socket
-        DatagramSocket socket = new DatagramSocket();
-
-            // send request
-        byte[] buf = new byte[256];
-        InetAddress address = InetAddress.getByName(args[0]);
-        DatagramPacket packet = new DatagramPacket(buf, buf.length, address, 3422);
-        socket.send(packet);
-
-            // get response
-        packet = new DatagramPacket(buf, buf.length);
-        socket.receive(packet);
-
-	    // display response
-        String received = new String(packet.getData(), 0, packet.getLength());
-        System.out.println("Quote of the Moment: " + received);
-
-        socket.close();
     }
 }

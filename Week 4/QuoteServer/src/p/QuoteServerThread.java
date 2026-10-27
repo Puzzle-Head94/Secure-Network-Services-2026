@@ -28,6 +28,7 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+package p;
 import java.io.*;
 import java.net.*;
 import java.util.*;
@@ -57,12 +58,19 @@ public class QuoteServerThread extends Thread {
 
         while (moreQuotes) {
             try {
-                byte[] buf = new byte[256];
-
-                // receive request
+                byte[] buf = new byte[512];
+ 
+                // receive requests
                 DatagramPacket packet = new DatagramPacket(buf, buf.length);
                 socket.receive(packet);
-
+                
+                // Conversion to real data
+                System.out.println(packet);
+                System.out.println("Data received... Unpacking");
+                String message = new String(packet.getData(), 0, packet.getLength());
+                System.out.println("Data Unpacked");
+                System.out.println("Data: " + message);
+                
                 // figure out response
                 String dString = null;
                 if (in == null)
@@ -70,7 +78,19 @@ public class QuoteServerThread extends Thread {
                 else
                     dString = getNextQuote();
 
-                buf = dString.getBytes();
+                // using calc function
+                String[] message_list = message.split(";");
+                String function = message_list[0];
+                int num1 = Integer.parseInt(message_list[1]);
+                int num2 = Integer.parseInt(message_list[2]);
+                int value = addValues(function, num1, num2);
+                String str_value = String.valueOf(value);
+
+                String returned_message = dString + '\n' + "Value: " + str_value;
+                buf = returned_message.getBytes();
+
+                // complete calc protocol
+
 
 		// send the response to the client at "address" and "port"
                 InetAddress address = packet.getAddress();
@@ -97,5 +117,14 @@ public class QuoteServerThread extends Thread {
             returnValue = "IOException occurred in server.";
         }
         return returnValue;
+    }
+
+    protected int addValues(String function, int num1, int num2) {
+        int return_val = -1;
+        switch (function.toUpperCase()) {
+            case "ADD":
+                return_val = num1 + num2;
+        }
+        return return_val;
     }
 }
