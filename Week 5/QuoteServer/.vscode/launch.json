@@ -1,0 +1,18 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "type": "java",
+      "name": "QuoteServer",
+      "request": "launch",
+      "mainClass": "p.QuoteServer"
+    },
+    {
+      "type": "java",
+      "name": "QuoteClient",
+      "request": "launch",
+      "mainClass": "p.QuoteClient",
+      "args": ["localhost"]
+    }
+  ]
+}
